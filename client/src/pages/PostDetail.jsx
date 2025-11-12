@@ -17,7 +17,7 @@ const PostDetail = () => {
     setError("");
     try {
       const data = await postService.getPost(slug);
-      setPost(data);
+      setPost(data.data); // Ensure correct access
     } catch (err) {
       console.error(err);
       setError("Failed to fetch post.");
@@ -28,7 +28,6 @@ const PostDetail = () => {
 
   useEffect(() => {
     fetchPost();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
   const handleCommentSubmit = async (e) => {
@@ -36,7 +35,7 @@ const PostDetail = () => {
     if (!comment) return;
 
     try {
-      await postService.addComment(post._id, { content: comment });
+      await postService.addComment(post.slug, { content: comment });
       setComment("");
       fetchPost(); // reload post to show new comment
     } catch (err) {
@@ -56,7 +55,7 @@ const PostDetail = () => {
 
       {post.featuredImage && (
         <img
-          src={`/uploads/${post.featuredImage}`}
+          src={post.featuredImage.startsWith("/") ? post.featuredImage : `/uploads/${post.featuredImage}`}
           alt={post.title}
           className="mb-6 w-full rounded"
         />
@@ -65,8 +64,8 @@ const PostDetail = () => {
       <h2 className="text-2xl font-semibold mb-4">Comments</h2>
       <div className="space-y-4 mb-6">
         {post.comments.length === 0 && <p>No comments yet.</p>}
-        {post.comments.map((c) => (
-          <div key={c._id} className="border rounded p-3">
+        {post.comments.map((c, index) => (
+          <div key={index} className="border rounded p-3">
             <p className="font-semibold">{c.user?.name || "Anonymous"}</p>
             <p>{c.content}</p>
             <p className="text-gray-500 text-sm">
@@ -93,9 +92,7 @@ const PostDetail = () => {
           </button>
         </form>
       ) : (
-        <p className="text-center text-gray-600">
-          Please login to add a comment.
-        </p>
+        <p className="text-center text-gray-600">Please login to add a comment.</p>
       )}
     </div>
   );

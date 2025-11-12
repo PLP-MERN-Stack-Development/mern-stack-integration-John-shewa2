@@ -1,7 +1,8 @@
-const express = require('express');
+// routes/posts.js
+const express = require("express");
 const router = express.Router();
-const { protect } = require('../middleware/authMiddleware');
-const upload = require('../middleware/uploadMiddleware');
+const { protect } = require("../middleware/authMiddleware");
+const upload = require("../middleware/uploadMiddleware");
 
 const {
   createPost,
@@ -12,22 +13,20 @@ const {
   addComment,
   updatePost,
   getAllPosts,
-  searchPosts
-} = require('../controllers/postController');
+  searchPosts,
+} = require("../controllers/postController");
 
-// Public feed
-router.get('/', getPublishedPosts);
+// ---------- PUBLIC ROUTES ----------
+router.get("/", getPublishedPosts); // public feed (published only)
+router.get("/all", getAllPosts); // all posts (admin or for pagination)
+router.get("/search", searchPosts);
+router.get("/:slug", getPostBySlug); // single post by slug
 
-// Single post public
-router.get('/:slug', getPostBySlug);
-
-// Logged-in user actions
-router.post('/', protect, upload.single('featuredImage'), createPost);
-router.get('/me/myposts', protect, getMyPosts);
-router.patch('/:id/publish', protect, togglePublish);
-router.post('/:slug/comment', protect, addComment);
-router.post('/:id', protect, updatePost);
-router.get('/', getAllPosts);
-router.get('/search', searchPosts)
+// ---------- AUTHENTICATED USER ROUTES ----------
+router.post("/", protect, upload.single("featuredImage"), createPost);
+router.get("/me/myposts", protect, getMyPosts);
+router.patch("/:id/publish", protect, togglePublish);
+router.post("/:slug/comment", protect, addComment);
+router.put("/:id", protect, updatePost);
 
 module.exports = router;

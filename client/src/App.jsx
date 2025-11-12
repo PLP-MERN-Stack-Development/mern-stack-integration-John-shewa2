@@ -14,6 +14,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/posts/:slug" element={<PostDetail />} />
         <Route path="/create-post" element={<CreatePost />} />
+        <Route path="/home" element={<Home />} />
       </Routes>
     </Router>
   );
